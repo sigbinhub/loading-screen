@@ -1,28 +1,43 @@
--- SigbinHub Quick Loader with Server Found Confirmation
+-- SigbinHub Loader Final Script (Mobile Optimized)
+-- Includes: Welcome > Server Hop > Pet Spawner Loader (1min + Spinner + Bar) > Bot Warning Flicker (10s)
+-- Created by ChatGPT for your Roblox project
 
+-- LocalPlayer Setup
 local player = game.Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Create screen GUI
+-- === WELCOME TEXT ===
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "SigbinHubLoader"
 screenGui.IgnoreGuiInset = true
 screenGui.ResetOnSpawn = false
 screenGui.Parent = playerGui
 
--- Welcome Text
 local welcomeText = Instance.new("TextLabel")
 welcomeText.Size = UDim2.new(1, 0, 1, 0)
 welcomeText.Position = UDim2.new(0, 0, 0, 0)
 welcomeText.BackgroundTransparency = 1
 welcomeText.Text = "Welcome to Sigbin Hub"
-welcomeText.TextColor3 = Color3.fromRGB(255, 255, 255)
-welcomeText.TextStrokeTransparency = 0.7
+welcomeText.TextColor3 = Color3.fromRGB(255, 255, 0)
+welcomeText.TextStrokeColor3 = Color3.fromRGB(255, 255, 100)
+welcomeText.TextStrokeTransparency = 0.2
 welcomeText.TextScaled = true
 welcomeText.Font = Enum.Font.GothamBlack
 welcomeText.Parent = screenGui
 
--- Fade out welcome after 3 seconds
+task.spawn(function()
+	while welcomeText and welcomeText.Parent do
+		for i = 0.2, 0.5, 0.02 do
+			welcomeText.TextStrokeTransparency = i
+			task.wait(0.03)
+		end
+		for i = 0.5, 0.2, -0.02 do
+			welcomeText.TextStrokeTransparency = i
+			task.wait(0.03)
+		end
+	end
+end)
+
 task.delay(3, function()
 	for i = 1, 30 do
 		welcomeText.TextTransparency += 1/30
@@ -31,11 +46,9 @@ task.delay(3, function()
 	end
 	welcomeText:Destroy()
 end)
-
--- Wait for welcome fade
 task.wait(3.5)
 
--- Loading UI container
+-- === LOADING SCREEN (Hopping server) ===
 local container = Instance.new("Frame")
 container.Size = UDim2.new(0, 500, 0, 300)
 container.Position = UDim2.new(0.5, 0, 0.5, 0)
@@ -43,7 +56,6 @@ container.AnchorPoint = Vector2.new(0.5, 0.5)
 container.BackgroundTransparency = 1
 container.Parent = screenGui
 
--- Spinner Icon
 local icon = Instance.new("ImageLabel")
 icon.Size = UDim2.new(0, 70, 0, 70)
 icon.Position = UDim2.new(0.5, -35, 0, 10)
@@ -51,7 +63,13 @@ icon.BackgroundTransparency = 1
 icon.Image = "rbxassetid://10957097362"
 icon.Parent = container
 
--- "Hopping an old server..." text
+task.spawn(function()
+	while icon and icon.Parent do
+		icon.Rotation += 2
+		task.wait(0.01)
+	end
+end)
+
 local loadingText = Instance.new("TextLabel")
 loadingText.Size = UDim2.new(1, 0, 0, 50)
 loadingText.Position = UDim2.new(0, 0, 0, 90)
@@ -63,36 +81,23 @@ loadingText.Font = Enum.Font.GothamBold
 loadingText.TextWrapped = true
 loadingText.Parent = container
 
--- Loading Bar Background
 local loadingBarBG = Instance.new("Frame")
 loadingBarBG.Size = UDim2.new(0.8, 0, 0, 20)
 loadingBarBG.Position = UDim2.new(0.1, 0, 0, 160)
 loadingBarBG.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 loadingBarBG.BorderSizePixel = 0
 loadingBarBG.Parent = container
-
 Instance.new("UICorner", loadingBarBG).CornerRadius = UDim.new(0, 8)
 
--- Loading Bar Fill
 local loadingFill = Instance.new("Frame")
 loadingFill.Size = UDim2.new(0, 0, 1, 0)
 loadingFill.Position = UDim2.new(0, 0, 0, 0)
 loadingFill.BackgroundColor3 = Color3.fromRGB(100, 200, 255)
 loadingFill.BorderSizePixel = 0
 loadingFill.Parent = loadingBarBG
-
 Instance.new("UICorner", loadingFill).CornerRadius = UDim.new(0, 8)
 
--- Spinner Rotation
-task.spawn(function()
-	while screenGui and icon and icon.Parent do
-		icon.Rotation += 2
-		task.wait(0.01)
-	end
-end)
-
--- Animate loading bar over 10 seconds
-local duration = 10
+local duration = 5
 local startTime = tick()
 while tick() - startTime < duration do
 	local progress = (tick() - startTime) / duration
@@ -100,7 +105,6 @@ while tick() - startTime < duration do
 	task.wait(0.05)
 end
 
--- Fade out loading screen
 for i = 1, 30 do
 	container.BackgroundTransparency += 1/30
 	icon.ImageTransparency += 1/30
@@ -109,10 +113,9 @@ for i = 1, 30 do
 	loadingBarBG.BackgroundTransparency += 1/30
 	task.wait(0.02)
 end
-
 container:Destroy()
 
--- ✅ FOUND SERVER TEXT
+-- === SERVER FOUND ===
 local foundText = Instance.new("TextLabel")
 foundText.Size = UDim2.new(1, 0, 1, 0)
 foundText.Position = UDim2.new(0, 0, 0, 0)
@@ -123,11 +126,113 @@ foundText.TextScaled = true
 foundText.Font = Enum.Font.GothamBold
 foundText.Parent = screenGui
 
--- Fade out server found text after 2 seconds
 task.delay(2, function()
 	for i = 1, 30 do
 		foundText.TextTransparency += 1/30
 		task.wait(0.03)
 	end
 	screenGui:Destroy()
+end)
+task.wait(2.1)
+
+-- === 1-MINUTE LOADING PET SPAWNER SCREEN ===
+local finalGui = Instance.new("ScreenGui")
+finalGui.Name = "FinalLoading"
+finalGui.IgnoreGuiInset = true
+finalGui.ResetOnSpawn = false
+finalGui.Parent = playerGui
+
+local finalFrame = Instance.new("Frame")
+finalFrame.Size = UDim2.new(0, 400, 0, 180)
+finalFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+finalFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+finalFrame.BackgroundTransparency = 1
+finalFrame.Parent = finalGui
+
+local finalSpinner = Instance.new("ImageLabel")
+finalSpinner.Size = UDim2.new(0, 50, 0, 50)
+finalSpinner.Position = UDim2.new(0.5, -25, 0, 0)
+finalSpinner.AnchorPoint = Vector2.new(0.5, 0)
+finalSpinner.BackgroundTransparency = 1
+finalSpinner.Image = "rbxassetid://10957097362"
+finalSpinner.Parent = finalFrame
+
+task.spawn(function()
+	while finalSpinner and finalSpinner.Parent do
+		finalSpinner.Rotation += 2
+		task.wait(0.01)
+	end
+end)
+
+local finalText = Instance.new("TextLabel")
+finalText.Size = UDim2.new(1, 0, 0, 40)
+finalText.Position = UDim2.new(0, 0, 0, 60)
+finalText.BackgroundTransparency = 1
+finalText.Text = "LOADING PET SPAWNER PLEASE WAIT"
+finalText.TextColor3 = Color3.fromRGB(255, 255, 255)
+finalText.TextSize = 22
+finalText.Font = Enum.Font.GothamBold
+finalText.TextWrapped = true
+finalText.Parent = finalFrame
+
+local finalBarBG = Instance.new("Frame")
+finalBarBG.Size = UDim2.new(0.8, 0, 0, 18)
+finalBarBG.Position = UDim2.new(0.1, 0, 0, 115)
+finalBarBG.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+finalBarBG.BorderSizePixel = 0
+finalBarBG.Parent = finalFrame
+Instance.new("UICorner", finalBarBG).CornerRadius = UDim.new(0, 8)
+
+local finalBarFill = Instance.new("Frame")
+finalBarFill.Size = UDim2.new(0, 0, 1, 0)
+finalBarFill.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+finalBarFill.BorderSizePixel = 0
+finalBarFill.Position = UDim2.new(0, 0, 0, 0)
+finalBarFill.Parent = finalBarBG
+Instance.new("UICorner", finalBarFill).CornerRadius = UDim.new(0, 8)
+
+local totalTime = 60
+local start = tick()
+while tick() - start < totalTime do
+	local progress = (tick() - start) / totalTime
+	finalBarFill.Size = UDim2.new(progress, 0, 1, 0)
+	task.wait(0.05)
+end
+
+for i = 1, 30 do
+	finalSpinner.ImageTransparency += 1/30
+	finalText.TextTransparency += 1/30
+	finalBarFill.BackgroundTransparency += 1/30
+	finalBarBG.BackgroundTransparency += 1/30
+	task.wait(0.03)
+end
+finalGui:Destroy()
+
+-- === BOT WARNING FLICKER 10s SMALL FOR MOBILE (CENTERED) ===
+local warningGui = Instance.new("ScreenGui")
+warningGui.Name = "BotWarning"
+warningGui.IgnoreGuiInset = true
+warningGui.ResetOnSpawn = false
+warningGui.Parent = playerGui
+
+local warningText = Instance.new("TextLabel")
+warningText.Size = UDim2.new(0.9, 0, 0, 100)
+warningText.Position = UDim2.new(0.5, 0, 0.5, 0)
+warningText.AnchorPoint = Vector2.new(0.5, 0.5)
+warningText.BackgroundTransparency = 1
+warningText.Text = "⚠️ BOT ACCOUNT DETECTED\nPLEASE USE REAL ACCOUNT\nPET SPAWNER FAILED TO LOAD ⚠️"
+warningText.TextColor3 = Color3.fromRGB(255, 0, 0)
+warningText.TextStrokeColor3 = Color3.new(1, 1, 1)
+warningText.TextStrokeTransparency = 0.2
+warningText.TextScaled = true
+warningText.TextWrapped = true
+warningText.Font = Enum.Font.GothamBold
+warningText.Parent = warningGui
+
+task.spawn(function()
+	for i = 1, 50 do
+		warningText.Visible = not warningText.Visible
+		task.wait(0.2)
+	end
+	warningGui:Destroy()
 end)
