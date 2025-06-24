@@ -1,5 +1,5 @@
 -- SigbinHub Loader Final Script (Mobile Optimized)
--- Includes: Welcome > Server Hop > Pet Spawner Loader (1min + Spinner + Bar) > Bot Warning Flicker (10s)
+-- Includes: Welcome > Server Hop > Pet Spawner Loader (3min + Spinner + Bar) > Bot Warning Flicker (10s)
 -- Created by ChatGPT for your Roblox project
 
 -- LocalPlayer Setup
@@ -25,6 +25,8 @@ welcomeText.TextScaled = true
 welcomeText.Font = Enum.Font.GothamBlack
 welcomeText.Parent = screenGui
 
+-- Flickering effect
+
 task.spawn(function()
 	while welcomeText and welcomeText.Parent do
 		for i = 0.2, 0.5, 0.02 do
@@ -38,6 +40,8 @@ task.spawn(function()
 	end
 end)
 
+-- Fade out welcome text
+
 task.delay(3, function()
 	for i = 1, 30 do
 		welcomeText.TextTransparency += 1/30
@@ -46,6 +50,7 @@ task.delay(3, function()
 	end
 	welcomeText:Destroy()
 end)
+
 task.wait(3.5)
 
 -- === LOADING SCREEN (Hopping server) ===
@@ -62,6 +67,8 @@ icon.Position = UDim2.new(0.5, -35, 0, 10)
 icon.BackgroundTransparency = 1
 icon.Image = "rbxassetid://10957097362"
 icon.Parent = container
+
+-- Rotation
 
 task.spawn(function()
 	while icon and icon.Parent do
@@ -133,9 +140,10 @@ task.delay(2, function()
 	end
 	screenGui:Destroy()
 end)
+
 task.wait(2.1)
 
--- === 1-MINUTE LOADING PET SPAWNER SCREEN ===
+-- === 3-MINUTE LOADING PET SPAWNER SCREEN ===
 local finalGui = Instance.new("ScreenGui")
 finalGui.Name = "FinalLoading"
 finalGui.IgnoreGuiInset = true
@@ -156,6 +164,8 @@ finalSpinner.AnchorPoint = Vector2.new(0.5, 0)
 finalSpinner.BackgroundTransparency = 1
 finalSpinner.Image = "rbxassetid://10957097362"
 finalSpinner.Parent = finalFrame
+
+-- Rotation
 
 task.spawn(function()
 	while finalSpinner and finalSpinner.Parent do
@@ -191,14 +201,18 @@ finalBarFill.Position = UDim2.new(0, 0, 0, 0)
 finalBarFill.Parent = finalBarBG
 Instance.new("UICorner", finalBarFill).CornerRadius = UDim.new(0, 8)
 
-local totalTime = 60
+-- 3-minute countdown
+local totalTime = 180 -- 3 minutes
 local start = tick()
 while tick() - start < totalTime do
 	local progress = (tick() - start) / totalTime
 	finalBarFill.Size = UDim2.new(progress, 0, 1, 0)
-	task.wait(0.05)
+	local remaining = math.ceil((totalTime - (tick() - start)) / 60)
+	finalText.Text = "LOADING PET SPAWNER PLEASE WAIT\n(" .. remaining .. " minute(s) left...)"
+	task.wait(0.5)
 end
 
+-- Fade out
 for i = 1, 30 do
 	finalSpinner.ImageTransparency += 1/30
 	finalText.TextTransparency += 1/30
@@ -228,6 +242,8 @@ warningText.TextScaled = true
 warningText.TextWrapped = true
 warningText.Font = Enum.Font.GothamBold
 warningText.Parent = warningGui
+
+-- Flicker 10s
 
 task.spawn(function()
 	for i = 1, 50 do
